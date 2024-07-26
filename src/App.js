@@ -8,12 +8,17 @@ import {
   createRoutesFromElements,
 } from "react-router-dom";
 import Login from "./pages/user/Login.jsx";
-import { logout } from "./actions/auth.js";
+import Home from "./pages/user/Home";
+import AuthProvider from "./context/AuthProvider";
 
 const router = createBrowserRouter([
   {
     path: "/",
     children: [
+      {
+        path: "",
+        element: <Home />,
+      },
       {
         path: "signup",
         element: <Signup />,
@@ -22,14 +27,6 @@ const router = createBrowserRouter([
         path: "login",
         element: <Login />,
       },
-      {
-        path: "logout",
-        element: (
-          <div>
-            <button onClick={logout}>logout</button>
-          </div>
-        ),
-      },
     ],
   },
 ]);
@@ -37,7 +34,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </>
   );
 }

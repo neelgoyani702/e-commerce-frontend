@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Button } from "../../components/ui/button";
 import {
     Card,
@@ -10,11 +10,13 @@ import {
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { login } from "../../actions/auth.js";
-import { Link,useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
 function Login() {
 
     const navigate = useNavigate();
+    const { user, setUser } = useContext(AuthContext)
 
     const [formData, setFormData] = useState({
         email: "",
@@ -24,8 +26,6 @@ function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         await login(formData);
-        
-        navigate("/");
     };
 
     const handleChange = (e) => {
@@ -34,6 +34,39 @@ function Login() {
             [e.target.name]: e.target.value,
         });
     };
+
+
+    const login = async (user) => {
+        try {
+            const response = await fetch(`http://localhost:5000/auth/login`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(user),
+                credentials: "include",
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message)
+
+            console.log(data);
+            if (data.user) {
+                setUser(data.user);
+                navigate("/");
+            }
+        } catch (e) {
+            alert(e)
+            console.log("Error: in login action", e);
+            console.log(e);
+        }
+    };
+
+    useEffect(() => {
+        if (user) {
+            navigate("/")
+        }
+    }, [user])
+
 
     return (
         <div className="min-h-screen flex items-center">

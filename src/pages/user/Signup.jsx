@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button } from "../../components/ui/button";
 import {
   Card,
@@ -9,10 +9,14 @@ import {
 } from "../../components/ui/card";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
-import { signup } from "../../actions/auth.js";
 import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthProvider";
 
 function Signup() {
+
+  const navigate = useNavigate();
+  const { user, setUser } = useContext(AuthContext)
+
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -20,13 +24,9 @@ function Signup() {
     password: "",
   });
 
-  const navigate = useNavigate();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     await signup(formData);
-    // redirect to login page
-    navigate("/login");
   };
 
   const handleChange = (e) => {
@@ -35,6 +35,34 @@ function Signup() {
       [e.target.name]: e.target.value,
     });
   };
+
+  const signup = async (user) => {
+    try {
+      const response = await fetch(`http://localhost:5000/auth/signup`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(user),
+      });
+
+      const data = await response.json();
+      console.log(data);
+      if (data.user) {
+        setUser(data.user);
+        navigate("/login");
+      }
+    } catch (e) {
+      console.log("Error: in signup actions", e);
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      navigate("/")
+    }
+  }, [user])
 
   return (
     <div className="min-h-screen flex items-center">
