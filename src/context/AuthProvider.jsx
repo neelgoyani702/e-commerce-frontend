@@ -10,10 +10,14 @@ function AuthProvider({ children }) {
             try {
                 const response = await fetch(`http://localhost:5000/user/get-user`, {
                     method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                     credentials: "include",
                 });
 
                 const data = await response.json();
+                console.log("checkUser: ",data);
 
                 if (data.user) {
                     setUser(data.user);

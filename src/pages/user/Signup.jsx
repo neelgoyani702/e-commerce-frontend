@@ -13,9 +13,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
 
 function Signup() {
-
   const navigate = useNavigate();
-  const { user, setUser } = useContext(AuthContext)
+  const { user, setUser } = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -47,7 +46,7 @@ function Signup() {
       });
 
       const data = await response.json();
-      console.log(data);
+      console.log("Signup Details : ",data.user);
       if (data.user) {
         setUser(data.user);
         navigate("/login");
@@ -60,9 +59,9 @@ function Signup() {
 
   useEffect(() => {
     if (user) {
-      navigate("/")
+      navigate("/");
     }
-  }, [user])
+  }, [user]);
 
   return (
     <div className="min-h-screen flex items-center">

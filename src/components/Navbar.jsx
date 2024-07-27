@@ -16,13 +16,12 @@ import {
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
 import { Input } from "./ui/input";
-import { Label } from "./ui/label";
 
 const navigation = [
-  { name: "Category", href: "/portfolio" },
-  { name: "Orders", href: "/careers" },
-  { name: "About", href: "/about-us" },
-  { name: "Contact Us", href: "/contact-us" },
+  { name: "Category", to: "/category" },
+  { name: "Orders", to: "/careers" },
+  { name: "About", to: "/about-us" },
+  { name: "Contact Us", to: "/contact-us" },
 ];
 
 export default function Navbar() {
@@ -31,7 +30,7 @@ export default function Navbar() {
   const { user, setUser } = useContext(AuthContext);
 
   const [isOpen, setOpen] = useState(false);
-  const [current, setCurrent] = useState();
+  // const [current, setCurrent] = useState();
 
   const toggleOpen = () => setOpen((prev) => !prev);
 
@@ -40,8 +39,8 @@ export default function Navbar() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [path]);
 
-  const closeOnCurrent = (href) => {
-    if (path === href) {
+  const closeOnCurrent = (to) => {
+    if (path === to) {
       toggleOpen();
     }
   };
@@ -85,7 +84,7 @@ export default function Navbar() {
               </Button>
             </div>
             <div className="flex flex-1 items-center justify-between sm:items-stretch sm:justify-start ml-12">
-              <Link href="/" className="flex flex-shrink-0 items-center">
+              <Link to="/" className="flex flex-shrink-0 items-center">
                 <img
                   className="block h-12 w-12 rounded-full object-cover"
                   src="https://images.unsplash.com/photo-1602934445884-da0fa1c9d3b3?q=80&w=1916&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -97,9 +96,9 @@ export default function Navbar() {
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8 w-full justify-center">
                 {navigation.map((item) => (
                   <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => closeOnCurrent(item.href)}
+                    key={item.to}
+                    to={item.to}
+                    onClick={() => closeOnCurrent(item.to)}
                     className="group my-auto inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus:text-accent-foreground focus:outline-none disabled:pointer-events-none disabled:opacity-50 "
                   >
                     {item.name}
@@ -121,8 +120,8 @@ export default function Navbar() {
                     >
                       <div className="w-12 h-12 rounded-full border flex justify-center items-center">
                         <img
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                          className="h-10 w-10 object-cover rounded-full"
+                          src={user.image}
+                          className="h-12 w-12 object-cover rounded-full"
                         />
                       </div>
                     </DropdownMenuTrigger>
@@ -160,10 +159,10 @@ export default function Navbar() {
             <div className="space-y-1 pt-2 pb-4">
               {navigation.map((item) => (
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  key={item.to}
+                  to={item.to}
                   className={cn(
-                    item.href === path
+                    item.to === path
                       ? "bg-indigo-50 border-primary text-primary"
                       : "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700",
                     "block border-l-4 py-2 pl-3 pr-4 text-base font-medium"

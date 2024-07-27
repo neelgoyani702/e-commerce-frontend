@@ -10,10 +10,14 @@ import {
 import Login from "./pages/user/Login.jsx";
 import Home from "./pages/user/Home";
 import AuthProvider from "./context/AuthProvider";
+import Category from "./pages/user/Category";
+import Navbar from "./components/Navbar";
+import Layout from "./Layout.js";
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Layout />,
     children: [
       {
         path: "",
@@ -26,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "category",
+        element: <Category />,
       },
     ],
   },

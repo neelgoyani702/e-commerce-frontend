@@ -1,16 +1,15 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
-import Navbar from '../../components/Navbar.jsx'
-import Slider from '../../components/Slider.jsx'
+import React from "react";
+import Slider from "../../components/Slider.jsx";
+import HomeCategories from "../../components/HomeCategories.jsx";
+
 
 function Home() {
-    return (
-        <div className='py-32 md:py-20'>
-            <Navbar />
-            <Slider />
-            Home
-        </div>
-    )
+  return (
+    <div className="py-32 md:py-20">
+      <Slider />
+      <HomeCategories />
+    </div>
+  );
 }
 
-export default Home
+export default Home;
