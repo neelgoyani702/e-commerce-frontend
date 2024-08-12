@@ -8,7 +8,7 @@ function AuthProvider({ children }) {
     useEffect(() => {
         const checkUser = async () => {
             try {
-                const response = await fetch(`http://localhost:5000/user/get-user`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/user/get-user`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",

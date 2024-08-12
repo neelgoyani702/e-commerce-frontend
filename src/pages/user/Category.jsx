@@ -7,7 +7,7 @@ function Category() {
 
     async function getCategory() {
         const response = await fetch(
-            "http://localhost:5000/category/get-category",
+            `${process.env.REACT_APP_API_URL}/category/get-category`,
             {
                 method: "GET",
                 headers: {
