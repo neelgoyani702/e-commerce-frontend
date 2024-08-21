@@ -11,6 +11,7 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
+import { toast } from "sonner";
 
 function Login() {
 
@@ -37,6 +38,9 @@ function Login() {
 
     const login = async (user) => {
         try {
+
+            toast.loading("Logging in...");
+
             const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/login`, {
                 method: "POST",
                 headers: {
@@ -45,18 +49,26 @@ function Login() {
                 body: JSON.stringify(user),
                 credentials: "include",
             });
-            const data = await response.json();
-            if (!response.ok) throw new Error(data.message)
 
-            console.log(data);
+            toast.dismiss();
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                toast.error(data.message);
+                // throw new Error(data.message)
+                return;
+            }
+
             if (data.user) {
                 setUser(data.user);
                 navigate("/");
+                toast.message("Welcome back, " + data.user.firstName);
             }
+
         } catch (e) {
-            alert(e)
+            toast.error(e);
             console.log("Error: in login action", e);
-            console.log(e);
         }
     };
 

@@ -2,9 +2,10 @@ import React, { useContext } from 'react';
 import { AuthContext } from "../context/AuthProvider";
 import { Link } from 'react-router-dom';
 import { icons } from 'lucide-react';
+import { toast } from 'sonner';
 
 const navigation = [
-    { name: "Profile Information", to: "", icons: icons.User },
+    { name: "Personal Information", to: "", icons: icons.User },
     { name: "Manage Addresses", to: "/addresses", icons: icons.MapPin },
     { name: "My Orders", to: "/orders", icons: icons.ShoppingBag },
 ];
@@ -15,6 +16,9 @@ function AccountSidebar() {
 
     const logout = async () => {
         try {
+
+            toast.loading("Logging out...");
+
             const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
                 method: "GET",
                 headers: {
@@ -23,12 +27,15 @@ function AccountSidebar() {
                 credentials: "include",
             });
 
+            toast.dismiss();
+
             const data = await response.json();
-            // console.log(data);
+            toast.success(data.message);
+
             setUser(null);
         } catch (e) {
+            toast.error(e);
             console.log("Error: in logout action", e);
-            console.log(e);
         }
     };
 

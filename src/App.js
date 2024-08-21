@@ -4,6 +4,7 @@ import {
   RouterProvider,
   createBrowserRouter,
 } from "react-router-dom";
+import { Toaster } from "./components/ui/sonner"
 import Login from "./pages/user/Login.jsx";
 import Home from "./pages/user/Home";
 import AuthProvider from "./context/AuthProvider";
@@ -52,6 +53,7 @@ function App() {
     <>
       <AuthProvider>
         <RouterProvider router={router} />
+        <Toaster richColors closeButton/>
       </AuthProvider>
     </>
   );

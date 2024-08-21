@@ -11,6 +11,7 @@ import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
+import { toast } from "sonner";
 
 function Signup() {
   const navigate = useNavigate();
@@ -37,6 +38,9 @@ function Signup() {
 
   const signup = async (user) => {
     try {
+
+      toast.loading("Signing up...");
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/signup`, {
         method: "POST",
         headers: {
@@ -44,15 +48,26 @@ function Signup() {
         },
         body: JSON.stringify(user),
       });
+
+      toast.dismiss();
+
       const data = await response.json();
-      console.log("Signup Details : ",data.user);
+
+      if (!response.ok) {
+        toast.error(data.message);
+        return;
+      }
+
+      console.log("Signup Details : ", data.user);
       if (data.user) {
         setUser(data.user);
         navigate("/login");
+        toast.message("Welcome, " + data.user.firstName);
       }
+
     } catch (e) {
+      toast.error(e);
       console.log("Error: in signup actions", e);
-      console.log(e);
     }
   };
 

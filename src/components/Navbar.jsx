@@ -18,6 +18,7 @@ import {
   AvatarImage,
 } from "../components/ui/avatar";
 import { Input } from "./ui/input";
+import { toast } from "sonner";
 
 const navigation = [
   { name: "Category", to: "/category" },
@@ -49,6 +50,9 @@ export default function Navbar() {
 
   const logout = async () => {
     try {
+
+      toast.loading("Logging out...");
+
       const response = await fetch(`${process.env.REACT_APP_API_URL}/auth/logout`, {
         method: "GET",
         headers: {
@@ -57,12 +61,15 @@ export default function Navbar() {
         credentials: "include",
       });
 
+      toast.dismiss();
+
       const data = await response.json();
-      // console.log(data);
+      toast.success(data.message);
+
       setUser(null);
     } catch (e) {
+      toast.error(e);
       console.log("Error: in logout action", e);
-      console.log(e);
     }
   };
 
@@ -136,7 +143,7 @@ export default function Navbar() {
                         <Link to="/profile">Profile</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem >Subscription</DropdownMenuItem>
-                      <DropdownMenuSeparator className='bg-slate-200'/>
+                      <DropdownMenuSeparator className='bg-slate-200' />
                       <DropdownMenuItem
                         className="font-semibold cursor-pointer"
                         onClick={() => {
