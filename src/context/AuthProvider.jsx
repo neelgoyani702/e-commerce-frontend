@@ -4,6 +4,7 @@ export const AuthContext = createContext();
 
 function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const checkUser = async () => {
@@ -17,7 +18,6 @@ function AuthProvider({ children }) {
                 });
 
                 const data = await response.json();
-                console.log("checkUser: ",data);
 
                 if (data.user) {
                     setUser(data.user);
@@ -25,12 +25,17 @@ function AuthProvider({ children }) {
             } catch (e) {
                 console.log("Error: in check user", e);
                 console.log(e);
+            } finally {
+                setLoading(false);
             }
         };
 
         checkUser();
     }, [])
 
+    if (loading) {
+        return <div>Loading...</div>
+    }
 
     return (
         <AuthContext.Provider value={{ user, setUser }}>

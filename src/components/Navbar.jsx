@@ -1,12 +1,9 @@
 import { cn } from "../lib/utils";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { Button } from "./ui/button";
 import { Link } from "react-router-dom";
-import { XIcon } from "lucide-react";
-import { Menu } from "lucide-react";
-import { ShoppingCart } from "lucide-react";
+import { XIcon, Menu, ShoppingCart } from "lucide-react";
 import { AuthContext } from "../context/AuthProvider";
-import { useContext } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +12,11 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../components/ui/avatar";
 import { Input } from "./ui/input";
 
 const navigation = [
@@ -56,7 +58,7 @@ export default function Navbar() {
       });
 
       const data = await response.json();
-      console.log(data);
+      // console.log(data);
       setUser(null);
     } catch (e) {
       console.log("Error: in logout action", e);
@@ -65,7 +67,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-white/40 backdrop-blur-md fixed z-50 w-full top-0 shadow">
+    <nav className="bg-white/90 backdrop-blur-md fixed z-50 w-full top-0 shadow">
       <>
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
           <div className="relative flex h-20 justify-between">
@@ -116,13 +118,13 @@ export default function Navbar() {
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       asChild
-                      className="rounded-full outline-none"
+                      className="outline-none"
                     >
-                      <div className="w-12 h-12 rounded-full border flex justify-center items-center">
-                        <img
-                          src={user.image}
-                          className="h-12 w-12 object-cover rounded-full"
-                        />
+                      <div className="rounded-full border border-slate-300 flex justify-center items-center">
+                        <Avatar>
+                          <AvatarImage src={user.image} alt="user" className="rounded-full cursor-pointer" />
+                          <AvatarFallback>{user.firstName[0] + user.lastName[0]}</AvatarFallback>
+                        </Avatar>
                       </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
@@ -130,11 +132,13 @@ export default function Navbar() {
                         {user.firstName} {user.lastName}
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Subscription</DropdownMenuItem>
-                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="cursor-pointer">
+                        <Link to="/profile">Profile</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem >Subscription</DropdownMenuItem>
+                      <DropdownMenuSeparator className='bg-slate-200'/>
                       <DropdownMenuItem
-                        className="font-semibold"
+                        className="font-semibold cursor-pointer"
                         onClick={() => {
                           logout();
                         }}

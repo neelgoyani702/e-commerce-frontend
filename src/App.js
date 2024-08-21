@@ -1,18 +1,16 @@
 import "./App.css";
-// import { Button } from "./components/ui/button";
 import Signup from "./pages/user/Signup.jsx";
 import {
-  Route,
   RouterProvider,
   createBrowserRouter,
-  createRoutesFromElements,
 } from "react-router-dom";
 import Login from "./pages/user/Login.jsx";
 import Home from "./pages/user/Home";
 import AuthProvider from "./context/AuthProvider";
 import Category from "./pages/user/Category";
-import Navbar from "./components/Navbar";
 import Layout from "./Layout.js";
+import Profile from "./pages/user/Profile";
+import ProfileInfo from "./pages/user/ProfileInfo";
 
 const router = createBrowserRouter([
   {
@@ -30,6 +28,16 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <Login />,
+      },
+      {
+        path: "profile",
+        element: < Profile />,
+        children: [
+          {
+            path: '',
+            element: <ProfileInfo />
+          }
+        ],
       },
       {
         path: "category",
