@@ -12,6 +12,7 @@ import Category from "./pages/user/Category";
 import Layout from "./Layout.js";
 import Profile from "./pages/user/Profile";
 import ProfileInfo from "./pages/user/ProfileInfo";
+import UserAddress from "./pages/user/UserAddress";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,10 @@ const router = createBrowserRouter([
           {
             path: '',
             element: <ProfileInfo />
+          },
+          {
+            path: 'addresses',
+            element: < UserAddress />
           }
         ],
       },
@@ -53,7 +58,7 @@ function App() {
     <>
       <AuthProvider>
         <RouterProvider router={router} />
-        <Toaster richColors closeButton/>
+        <Toaster richColors closeButton />
       </AuthProvider>
     </>
   );
