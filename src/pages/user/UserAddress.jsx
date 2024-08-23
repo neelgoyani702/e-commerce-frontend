@@ -4,6 +4,11 @@ import { Button } from '../../components/ui/button';
 import { toast } from 'sonner';
 import { MapPinnedIcon } from 'lucide-react';
 import { Plus } from 'lucide-react';
+import {
+    Dialog,
+    DialogTrigger,
+} from "../../components/ui/dialog"
+import AddAdress from "../../components/AddAddress";
 
 function UserAddress() {
 
@@ -56,28 +61,33 @@ function UserAddress() {
 
         getAddress();
 
-    }, [user,address.lengh]);
+    }, [user, address.lengh]);
 
     return (
-        <div className='py-2 px-4'>
+        <div className='py-2 px-4 flex justify-center flex-col'>
             <div className='flex gap-5 justify-center items-center my-2'>
                 < MapPinnedIcon size={30} className='rounded-full' />
                 <h1 className='text-3xl'>Your Addresses</h1>
             </div>
-            <div className='m-10 flex gap-6 justify-between flex-wrap'>
+            <div className='m-10 flex gap-6 justify-start flex-wrap'>
                 <div>
-                    <div className='w-72 h-60 border-2 border-dashed cursor-pointer flex flex-col justify-center items-center'>
-                        <Plus size={50} className='m-5 text-slate-300' />
-                        <h3 className='text-lg text-slate-600'>Add Address</h3>
-                    </div>
+                    <Dialog>
+                        <DialogTrigger>
+                            <div className='w-72 h-60 border-2 border-dashed cursor-pointer flex flex-col justify-center items-center'>
+                                <Plus size={50} className='m-5 text-slate-300' />
+                                <h3 className='text-lg text-slate-600'>Add Address</h3>
+                            </div>
+                        </DialogTrigger>
+                        <AddAdress />
+                    </Dialog>
                 </div>
 
                 {
                     address.map((address) => (
                         <div key={address._id} className='w-72 h-60 border-2 flex flex-col justify-between'>
                             <div className='m-5'>
-                                <h3 className='font-bold text-lg'>{user.firstName} {user.lastName}</h3>
-                                <div className=''>
+                                <h3 className='font-semibold'>{address.fullName || user.firstName}</h3>
+                                <div className='text-sm'>
                                     {address?.houseNo && <p> Home No. {address.houseNo}</p>}
                                     {address?.area && <p>{address.area}</p>}
                                     <>
@@ -86,6 +96,7 @@ function UserAddress() {
                                         {address?.pinCode && <span> {address.pinCode}</span>}
                                     </>
                                     {address?.country && <p>{address.country}</p>}
+                                    {address?.phone && <p>phone number : {address.phone || user.phone}</p>}
                                 </div>
                             </div>
                             <div className='h-16 border-t flex items-center gap-2 mx-5'>
