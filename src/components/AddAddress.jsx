@@ -13,7 +13,7 @@ import { Button } from './ui/button'
 import { toast } from 'sonner'
 import { AuthContext } from '../context/AuthProvider'
 
-function AddAdress() {
+function AddAdress({ handleAddAddress }) {
 
     const [address, setAddress] = useState({
         fullName: '',
@@ -21,7 +21,6 @@ function AddAdress() {
         houseNo: '',
         landmark: '',
         area: '',
-        pinCode: '',
         city: '',
         state: '',
         country: 'India'
@@ -34,7 +33,6 @@ function AddAdress() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(address);
 
         if (!address.fullName) {
             if (user.firstName) {
@@ -60,7 +58,6 @@ function AddAdress() {
             }
         }
 
-
         if (address.phone && !/^[0-9]{10}$/.test(address.phone)) {
             toast.message('invalid phone number', {
                 description: 'phone number should be 10 digits long and contains only numbers',
@@ -71,16 +68,12 @@ function AddAdress() {
         try {
 
             const toastId = toast.loading('adding address...');
-            setAddress({
-                ...address,
-                pinCode: pinCode
-            });
             const response = await fetch(`${process.env.REACT_APP_API_URL}/user/add-address`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(address),
+                body: JSON.stringify({ ...address, pinCode }),
                 credentials: 'include',
             });
             toast.dismiss(toastId);
@@ -92,9 +85,10 @@ function AddAdress() {
                 return;
             }
             else {
+                handleAddAddress(data.address);
                 toast.success(data.message);
                 ref.current.click();
-                // navigate('/profile/addresses');
+                // navigate(0);
             }
 
         } catch (error) {
@@ -102,7 +96,16 @@ function AddAdress() {
             toast.error("something went wrong");
         }
 
-        console.log(address);
+        setAddress({
+            fullName: '',
+            phone: '',
+            houseNo: '',
+            landmark: '',
+            area: '',
+            city: '',
+            state: '',
+            country: 'India'
+        });
 
     }
 
@@ -114,13 +117,13 @@ function AddAdress() {
     }
 
     const handlePinCodeChange = async (e) => {
-        console.log(e.target.value);
+        // console.log(e.target.value);
         setPinCode(e.target.value);
         try {
             const response = await fetch(`https://api.postalpincode.in/pincode/${e.target.value}`);
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
                 if (data[0]?.PostOffice?.length > 0) {
                     setAddress({
                         ...address,

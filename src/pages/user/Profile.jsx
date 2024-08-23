@@ -25,7 +25,7 @@ function Profile() {
     <div className='py-32 md:py-20'>
       <h1 className='font-[Caveat] font-extrabold text-5xl m-12'>My Account</h1>
       <div className='flex flex-row gap-10 my-8 mx-12'>
-        <div className='w-60 border'>
+        <div className='w-60 border h-fit'>
           <div className='border-b mb-5 flex flex-col gap-2 justify-center items-center p-2'>
             <img src={user.image} width={100} height={100} alt="user" className='rounded-full w-auto h-auto' />
             <h3 className='font-medium text-xl break-words'>{user.firstName} {user.lastName}</h3>
