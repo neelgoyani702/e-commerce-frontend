@@ -3,10 +3,10 @@ import React from 'react'
 function CategoryCard({ category }) {
     return (
         <>
-            <div className="max-w-sm rounded overflow-hidden shadow-lg p-2">
-                <img className="w-full min-h-36 max-h-64 rounded" width={200} height={200} src={category.image} alt="category image" />
-                <div className="px-6 py-4">
-                    <div className="font-bold text-xl mb-2 text-center">{category.name}</div>
+            <div className="items-center p-5 border hover:scale-105 transition-transform duration-500 cursor-pointer">
+                <img className="w-full object-cover object-center h-64" width={200} height={200} src={category.image} alt="category" />
+                <div className="flex justify-center items-center mt-5">
+                    <div className="font-normal text-lg text-center">{category.name}</div>
                 </div>
             </div>
         </>
