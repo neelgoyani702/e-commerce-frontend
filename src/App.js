@@ -13,6 +13,8 @@ import Layout from "./Layout.js";
 import Profile from "./pages/user/Profile";
 import ProfileInfo from "./pages/user/ProfileInfo";
 import UserAddress from "./pages/user/UserAddress";
+import CategoryProducts from "./pages/user/CategoryProducts";
+import ProductDetail from "./pages/user/ProductDetail";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +51,14 @@ const router = createBrowserRouter([
         path: "category",
         element: <Category />,
       },
+      {
+        path: "category/:categoryId/products",
+        element: <CategoryProducts />
+      },
+      {
+        path: "product/:productId",
+        element : <ProductDetail />
+      }
     ],
   },
 ]);
