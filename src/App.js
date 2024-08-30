@@ -15,6 +15,7 @@ import ProfileInfo from "./pages/user/ProfileInfo";
 import UserAddress from "./pages/user/UserAddress";
 import CategoryProducts from "./pages/user/CategoryProducts";
 import ProductDetail from "./pages/user/ProductDetail";
+import Cart from "./pages/user/Cart";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,11 @@ const router = createBrowserRouter([
       },
       {
         path: "product/:productId",
-        element : <ProductDetail />
+        element: <ProductDetail />
+      },
+      {
+        path: "checkout/cart",
+        element: <Cart />
       }
     ],
   },

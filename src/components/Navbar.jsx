@@ -118,9 +118,9 @@ export default function Navbar() {
                 <div className="hidden md:flex justify-center items-center min-w-48 max-w-56 w-full">
                   <Input placeholder="Search" />
                 </div>
-                <Button variant="link" size="icon">
+                <Link to="/checkout/cart">
                   <ShoppingCart className="h-6 w-6" />
-                </Button>
+                </Link>
                 {user ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger

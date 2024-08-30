@@ -1,4 +1,3 @@
-import { ShoppingCart } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import { IndianRupee } from "lucide-react";
 import React, { useState, useEffect } from "react";
@@ -12,6 +11,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "../../components/ui/accordion";
+import AddToCart from "../../components/AddToCart";
+import { ShoppingCart } from "lucide-react";
 
 function ProductDetail() {
   const { productId } = useParams();
@@ -120,10 +121,12 @@ function ProductDetail() {
               </div>
             </div>
             <div className="flex flex-row gap-5 my-5 justify-center flex-wrap item-center">
-              <Button className="flex gap-3 text-xl py-7 px-10 bg-yellow-600 hover:bg-yellow-500 duration-500 border border-transparent">
-                <ShoppingCart className="h-5 w-5" />
-                Add to Cart
-              </Button>
+              <AddToCart product={product} quantity={1} ATC={true}>
+                <Button className="flex gap-3 text-xl py-7 px-10 bg-yellow-600 hover:bg-yellow-500 duration-500 border border-transparent">
+                  <ShoppingCart className="h-5 w-5" />
+                  Add to Cart
+                </Button>
+              </AddToCart>
               <Button
                 variant="secondary"
                 className="flex gap-3 text-xl py-7 px-10 duration-500 border border-slate-400 hover:border-slate-300"
