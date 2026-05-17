@@ -271,6 +271,39 @@ function AdminDashboard() {
         })}
       </div>
 
+      {/* Payment Stats */}
+      {stats.paymentStats && (
+        <div className="bg-white rounded-xl border border-gray-100 p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <IndianRupee className="h-4 w-4 text-indigo-500" />
+            <h3 className="text-sm font-bold text-gray-900">Payment Overview</h3>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { label: "Collected", value: stats.paymentStats.collected, color: "text-emerald-600", bg: "bg-emerald-50" },
+              { label: "Refunded", value: stats.paymentStats.refunded, color: "text-amber-600", bg: "bg-amber-50" },
+              { label: "Pending", value: stats.paymentStats.pending, color: "text-blue-600", bg: "bg-blue-50" },
+              { label: "Failed", value: stats.paymentStats.failed, color: "text-red-600", bg: "bg-red-50" },
+            ].map((item, i) => (
+              <div key={i} className={`rounded-lg ${item.bg} p-4`}>
+                <p className="text-[11px] font-medium text-gray-500 uppercase tracking-wider">{item.label}</p>
+                <p className={`text-xl font-bold ${item.color} mt-1`}>₹{(item.value || 0).toLocaleString()}</p>
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-6 mt-4 pt-3 border-t border-gray-100">
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="w-2 h-2 rounded-full bg-indigo-500" />
+              <span>Online: <strong className="text-gray-900">{stats.paymentStats.onlineOrders || 0}</strong></span>
+            </div>
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <div className="w-2 h-2 rounded-full bg-amber-500" />
+              <span>COD: <strong className="text-gray-900">{stats.paymentStats.codOrders || 0}</strong></span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Revenue Chart */}

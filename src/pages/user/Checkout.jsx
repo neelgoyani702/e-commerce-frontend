@@ -34,6 +34,19 @@ function Checkout() {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState("cod"); // "cod" | "online"
+
+  // Load Razorpay checkout.js script lazily
+  function loadRazorpayScript() {
+    return new Promise((resolve) => {
+      if (window.Razorpay) return resolve(true);
+      const script = document.createElement("script");
+      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  }
 
   // Fetch cart
   async function getCart() {
@@ -81,43 +94,127 @@ function Checkout() {
     }
   }
 
-  // Place order
-  async function placeOrder() {
-    if (!selectedAddress) {
-      toast.error("Please select a delivery address");
-      return;
-    }
-
+  // COD order placement
+  async function handleCOD() {
+    if (!selectedAddress) return toast.error("Please select a delivery address");
     try {
       setPlacingOrder(true);
       const toastId = toast.loading("Placing your order...");
-
       const response = await fetch(`${process.env.REACT_APP_API_URL}/order`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({
-          couponCode: appliedCoupon?.code || null,
-        }),
+        body: JSON.stringify({ couponCode: appliedCoupon?.code || null, paymentMethod: "cod" }),
       });
-
       toast.dismiss(toastId);
       const data = await response.json();
-
       if (response.ok) {
-        toast.success("Order placed successfully! 🎉");
-        navigate("/order-confirmation", {
-          state: { order: data.savedOrder },
-        });
+        toast.success("Order placed! 🎉");
+        navigate("/order-confirmation", { state: { order: data.savedOrder } });
       } else {
         toast.error(data.message || "Failed to place order");
       }
-    } catch (error) {
-      console.error("Error placing order:", error);
+    } catch {
       toast.error("Something went wrong");
     } finally {
       setPlacingOrder(false);
     }
+  }
+
+  // Online payment via Razorpay
+  async function handlePayOnline() {
+    if (!selectedAddress) return toast.error("Please select a delivery address");
+    const loaded = await loadRazorpayScript();
+    if (!loaded) return toast.error("Failed to load payment gateway. Check your internet connection.");
+
+    try {
+      setPlacingOrder(true);
+      const finalAmount = (cart.totalAmount || 0) - (appliedCoupon?.discount || 0);
+
+      // Step 1: Create Razorpay order on backend (no app order yet)
+      const orderRes = await fetch(`${process.env.REACT_APP_API_URL}/payment/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ amount: finalAmount }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) { toast.error(orderData.message || "Payment initiation failed"); setPlacingOrder(false); return; }
+
+      // Step 2: Open Razorpay popup FIRST (no app order created yet)
+      const options = {
+        key: orderData.keyId,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "ShopEasy",
+        description: "Online Payment",
+        order_id: orderData.orderId,
+        prefill: {
+          name: user?.firstName + " " + (user?.lastName || ""),
+          email: user?.email || "",
+        },
+        theme: { color: "#6366f1" },
+        handler: async (response) => {
+          // Step 3: Payment succeeded — NOW create the app order
+          const toastId = toast.loading("Confirming your order...");
+          try {
+            const appOrderRes = await fetch(`${process.env.REACT_APP_API_URL}/order`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ couponCode: appliedCoupon?.code || null, paymentMethod: "online" }),
+            });
+            const appOrderData = await appOrderRes.json();
+            toast.dismiss(toastId);
+
+            if (!appOrderRes.ok) {
+              toast.error(appOrderData.message || "Failed to create order");
+              setPlacingOrder(false);
+              return;
+            }
+
+            const appOrderId = appOrderData.savedOrder?._id;
+
+            // Step 4: Verify payment and link to app order
+            const verifyRes = await fetch(`${process.env.REACT_APP_API_URL}/payment/verify`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                appOrderId,
+              }),
+            });
+            const verifyData = await verifyRes.json();
+            if (verifyRes.ok) {
+              toast.success("Payment successful! Order confirmed 🎉");
+              navigate("/order-confirmation", { state: { order: appOrderData.savedOrder } });
+            } else {
+              toast.error(verifyData.message || "Payment verification failed");
+            }
+          } catch {
+            toast.dismiss(toastId);
+            toast.error("Order confirmation failed. Contact support.");
+          }
+          setPlacingOrder(false);
+        },
+        modal: { ondismiss: () => { toast.info("Payment cancelled — no order was placed."); setPlacingOrder(false); } },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch {
+      toast.error("Something went wrong");
+      setPlacingOrder(false);
+    }
+  }
+
+  // Unified handler
+  function placeOrder() {
+    if (paymentMethod === "online") return handlePayOnline();
+    return handleCOD();
   }
 
   const handleAddAddress = (address) => {
@@ -437,6 +534,34 @@ function Checkout() {
                       <span>{((cart.totalAmount || 0) - (appliedCoupon?.discount || 0)).toLocaleString()}</span>
                     </div>
                   </div>
+                </div>
+
+                {/* Payment Method Selector */}
+                <div className="mt-4 space-y-2">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Payment Method</p>
+                  {[
+                    { id: "cod", label: "Cash on Delivery", desc: "Pay when your order arrives", icon: "🏠" },
+                    { id: "online", label: "Pay Online", desc: "UPI, Cards, Netbanking via Razorpay", icon: "💳" },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => setPaymentMethod(m.id)}
+                      className={`w-full text-left flex items-center gap-3 rounded-xl p-3 border-2 transition-all ${
+                        paymentMethod === m.id ? "border-store-primary bg-store-primary/5" : "border-gray-100 hover:border-gray-200"
+                      }`}
+                    >
+                      <span className="text-lg">{m.icon}</span>
+                      <div className="flex-1">
+                        <p className="text-xs font-bold text-gray-900">{m.label}</p>
+                        <p className="text-[10px] text-gray-400">{m.desc}</p>
+                      </div>
+                      <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                        paymentMethod === m.id ? "border-store-primary" : "border-gray-300"
+                      }`}>
+                        {paymentMethod === m.id && <div className="w-2 h-2 rounded-full bg-store-primary" />}
+                      </div>
+                    </button>
+                  ))}
                 </div>
 
                 <button

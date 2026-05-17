@@ -22,11 +22,13 @@ import {
   BarChart3,
   AlertTriangle,
   FileSpreadsheet,
+  IndianRupee,
 } from "lucide-react";
 
 const navItems = [
   { label: "Dashboard", to: "/admin", icon: LayoutDashboard },
   { label: "Orders", to: "/admin/orders", icon: ShoppingCart },
+  { label: "Payments", to: "/admin/payments", icon: IndianRupee },
   { label: "Products", to: "/admin/products", icon: Package },
   { label: "Categories", to: "/admin/categories", icon: FolderOpen },
   { label: "Users", to: "/admin/users", icon: Users },
